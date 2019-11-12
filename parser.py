@@ -38,28 +38,28 @@ class StrTableParser(object):
         self._table = table_in_str
 
     @staticmethod
-    def _get_values_from_str(line):
+    def _extract_table_row_values(line):
         return [value.strip() for value in line.split('|') if value.strip()]
 
     @staticmethod
-    def _extract_header_of_table(table):
+    def _extract_table_header(table):
         """
-        >>> StrTableParser._extract_header_of_table(f'| head |\\n| body_1 |\\n| body_2 |')
+        >>> StrTableParser._extract_table_header(f'| head |\\n| body_1 |\\n| body_2 |')
         '| head |'
         """
 
         return table.split("\n")[0]
 
     @staticmethod
-    def _extract_body_of_table(table):
+    def _extract_table_body(table):
         """
-        >>> StrTableParser._extract_body_of_table(f'| head |\\n| body_1 |\\n| body_2 |')
+        >>> StrTableParser._extract_table_body(f'| head |\\n| body_1 |\\n| body_2 |')
         ['| body_1 |', '| body_2 |']
         """
         return table.split("\n")[1:]
 
     def _extract_fields(self):
-        return self._get_values_from_str(self._extract_header_of_table(self.table))
+        return self._extract_table_row_values(self._extract_table_header(self.table))
 
     @property
     def fields(self):
@@ -71,7 +71,7 @@ class StrTableParser(object):
         container = {item: [] for item in self.fields}
 
         for line in self.body:
-            line_values = self._get_values_from_str(line)
+            line_values = self._extract_table_row_values(line)
 
             for index in range(len(line_values)):
                 container[self.fields[index]].append(line_values[index])
@@ -80,7 +80,7 @@ class StrTableParser(object):
     @property
     def body(self):
         if not self._body:
-            self._body = self._extract_body_of_table(self.table)
+            self._body = self._extract_table_body(self.table)
         return self._body
 
     @property
@@ -91,9 +91,9 @@ class StrTableParser(object):
 
     def column(self, index):
         fields_names = self.fields
-        if (index - 1) < 0 or (index - 1) > (len(fields_names) - 1):
-            raise ValueError(f'Column No.{index} does not exist. Amount of columns is {len(fields_names)}.')
-        return self.container[fields_names[index - 1]]
+        if index < 0 or index > (len(fields_names) - 1):
+            raise ValueError(f'Column No.{index} does not exist. Last column is {len(fields_names) - 1}.')
+        return self.container[fields_names[index]]
 
     @property
     def columns(self):
@@ -104,15 +104,15 @@ class StrTableParser(object):
 
     def row(self, index):
         aggregated_row = []
-        if (index - 1) < 0 or (index - 1) > (len(self.body) - 1):
-            raise ValueError(f'Row No.{index} does not exist. Amount of rows is {len(self.fields)}.')
+        if index < 0 or index > (len(self.body) - 1):
+            raise ValueError(f'Row No.{index} does not exist. Last row is {len(self.body) - 1}.')
         for value in self.container.values():
-            aggregated_row.append(value[index - 1])
+            aggregated_row.append(value[index])
         return aggregated_row
 
     @property
     def rows(self):
         aggregated_rows = []
         for index in range(len(self.fields) - 1):
-            aggregated_rows.append(self.row(index + 1))
+            aggregated_rows.append(self.row(index))
         return aggregated_rows
