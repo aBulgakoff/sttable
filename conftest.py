@@ -5,4 +5,7 @@ from parser import StrTableParser
 
 @pytest.fixture()
 def tf():
-    return StrTableParser()
+    def init_parser(table):
+        return StrTableParser(table)
+
+    return init_parser
