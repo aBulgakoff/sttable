@@ -1,11 +1,11 @@
 import pytest
 
-from parser import StrTableParser
+from parser import Table, parse_str_table
 
 
 @pytest.fixture()
 def tf():
-    def init_parser(table):
-        return StrTableParser(table)
+    def table_builder(table):
+        return Table(parse_str_table(table))
 
-    return init_parser
+    return table_builder

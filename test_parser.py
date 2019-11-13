@@ -39,10 +39,6 @@ def test_fields_extracted(tf):
         F'Not all fields match. Found {len(header_fields)} field(s) when expected {len(exp_parsed_header)}'
 
 
-def test_body_extracted(tf):
-    assert tf(source_table).body == exp_body, 'Body does not match'
-
-
 def test_container_property(tf):
     assert tf(source_table).container == exp_parsed_obj, f'Objects do not match.'
 
