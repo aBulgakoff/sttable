@@ -15,22 +15,13 @@ def parse_str_table(unformatted_data):
     {'head': ['body_1', 'body_2']}
 
     """
+    table = Table()
     unformatted_header = _extract_table_header(unformatted_data)
     unformatted_body = _extract_table_body(unformatted_data)
-    table_fields = _extract_values_from_row(unformatted_header)
-    mapped_data = _map_all_values_to_fields(table_fields, unformatted_body)
-    return mapped_data
+    table.fields = _extract_values_from_row(unformatted_header)
 
-
-def _map_all_values_to_fields(fields, table_body):
-    container = {item: [] for item in fields}
-
-    for line in table_body:
-        line_values = _extract_values_from_row(line)
-
-        for index in range(len(line_values)):
-            container[fields[index]].append(line_values[index])
-    return container
+    [table.add_row(_extract_values_from_row(line)) for line in unformatted_body]
+    return table
 
 
 def _extract_values_from_row(line):
@@ -63,54 +54,35 @@ def _extract_table_body(table):
 
 class Table(object):
 
-    def __init__(self, container):
-        self._container = container
-        self._table = None
+    def __init__(self):
         self._fields = None
-        self._body = None
-
-    @property
-    def table(self):
-        if self._table:
-            return self._table
-        else:
-            raise ValueError('Table is empty.')
+        self._columns = []
+        self._rows = []
 
     @property
     def fields(self):
-        if not self._fields:
-            self._fields = list(self.container.keys())
-        return self._fields
+        return list(self._fields.keys())
+
+    @fields.setter
+    def fields(self, fields):
+        self._fields = {key: '' for key in fields}
 
     @property
-    def container(self):
-        return self._container
+    def row(self):
+        return self._rows.copy()
 
-    def column(self, index):
-        fields_names = self.fields
-        if index < 0 or index > (len(fields_names) - 1):
-            raise ValueError(f'Column No.{index} does not exist. Last column is {len(fields_names) - 1}.')
-        return self.container[fields_names[index]]
+    @row.setter
+    def row(self, row):
+        self._rows.append(dict(zip(self._fields.copy(), row)))
 
-    @property
-    def columns(self):
-        aggregated_columns = []
-        for index in range(len(self.fields)):
-            aggregated_columns.append(self.container[self.fields[index]])
-        return aggregated_columns
-
-    def row(self, index):
-        aggregated_row = []
-        index_last_elem_of_first_field = len(self.container[self.fields[0]]) - 1
-        if index < 0 or index > index_last_elem_of_first_field:
-            raise ValueError(f'Row No.{index} does not exist. Last row is {index_last_elem_of_first_field}.')
-        for value in self.container.values():
-            aggregated_row.append(value[index])
-        return aggregated_row
+    def add_row(self, row):
+        self.row = row
 
     @property
     def rows(self):
-        aggregated_rows = []
-        for index in range(len(self.fields) - 1):
-            aggregated_rows.append(self.row(index))
-        return aggregated_rows
+        return self._rows.copy()
+
+    @rows.setter
+    def rows(self, rows):
+        for row in rows:
+            self.row = row

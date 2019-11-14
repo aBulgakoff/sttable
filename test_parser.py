@@ -56,7 +56,7 @@ def test_try_get_nonexistent_column(tf, index):
 
 @pytest.mark.parametrize('index, expected_row', exp_get_row)
 def test_get_row(tf, index, expected_row):
-    assert tf(source_table).row(index) == expected_row
+    assert tf(source_table).row[index] == expected_row
 
 
 @pytest.mark.parametrize('index', exp_row_negative_index)
