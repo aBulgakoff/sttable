@@ -7,64 +7,66 @@ Input:
 | row_2_of_1st_col | row_2_of_2nd_col | row_2_of_3rd_col |
 """
 
-header = '| header_1st_col | header_2nd_col | header_3rd_col |'
-body_row1 = '| row_1_of_1st_col | row_1_of_2nd_col | row_1_of_3rd_col |'
-body_row2 = '| row_2_of_1st_col | row_2_of_2nd_col | row_2_of_3rd_col |'
+HEADER = '| header_1st_col | header_2nd_col | header_3rd_col |'
+BODY_ROW1 = '| row_1_of_1st_col | row_1_of_2nd_col | row_1_of_3rd_col |'
+BODY_ROW2 = '| row_2_of_1st_col | row_2_of_2nd_col | row_2_of_3rd_col |'
 
-source_table = f'{header}\n{body_row1}\n{body_row2}'
+SOURCE_TABLE = f'{HEADER}\n{BODY_ROW1}\n{BODY_ROW2}'
 
-exp_fields = ['header_1st_col', 'header_2nd_col', 'header_3rd_col']
-exp_body = [body_row1, body_row2]
+EXP_FIELDS = ['header_1st_col', 'header_2nd_col', 'header_3rd_col']
+EXP_BODY = [BODY_ROW1, BODY_ROW2]
 
-exp_col_0 = ['row_1_of_1st_col', 'row_2_of_1st_col']
-exp_col_1 = ['row_1_of_2nd_col', 'row_2_of_2nd_col']
-exp_col_2 = ['row_1_of_3rd_col', 'row_2_of_3rd_col']
-exp_cols = {exp_fields[0]: exp_col_0, exp_fields[1]: exp_col_1, exp_fields[2]: exp_col_2}
-exp_get_col = [(0, exp_col_0), (1, exp_col_1), (2, exp_col_2)]
-exp_col_negative_index = (-4, 3, 4)
+EXP_COL0 = ['row_1_of_1st_col', 'row_2_of_1st_col']
+EXP_COL1 = ['row_1_of_2nd_col', 'row_2_of_2nd_col']
+EXP_COL2 = ['row_1_of_3rd_col', 'row_2_of_3rd_col']
 
-exp_row_0 = {'header_1st_col': 'row_1_of_1st_col',
-             'header_2nd_col': 'row_1_of_2nd_col',
-             'header_3rd_col': 'row_1_of_3rd_col'}
-exp_row_1 = {'header_1st_col': 'row_2_of_1st_col',
-             'header_2nd_col': 'row_2_of_2nd_col',
-             'header_3rd_col': 'row_2_of_3rd_col'}
-exp_rows = [exp_row_0, exp_row_1]
-exp_get_row = [(0, exp_row_0), (1, exp_row_1), (-1, exp_row_1), (-2, exp_row_0)]
-exp_row_negative_index = (2, 3, -3)
+EXP_COLS = {EXP_FIELDS[0]: EXP_COL0, EXP_FIELDS[1]: EXP_COL1, EXP_FIELDS[2]: EXP_COL2}
+
+EXP_GET_COL = [(0, EXP_COL0), (1, EXP_COL1), (2, EXP_COL2)]
+EXP_NONEXIST_COL_IX = (-4, 3, 4)
+
+EXP_ROW0 = {'header_1st_col': 'row_1_of_1st_col',
+            'header_2nd_col': 'row_1_of_2nd_col',
+            'header_3rd_col': 'row_1_of_3rd_col'}
+EXP_ROW1 = {'header_1st_col': 'row_2_of_1st_col',
+            'header_2nd_col': 'row_2_of_2nd_col',
+            'header_3rd_col': 'row_2_of_3rd_col'}
+EXP_ROWS = [EXP_ROW0, EXP_ROW1]
+EXP_GET_ROW = [(0, EXP_ROW0), (1, EXP_ROW1), (-1, EXP_ROW1), (-2, EXP_ROW0)]
+EXP_NONEXIST_ROW_IX = (2, 3, -3)
 
 
 def test_fields_extracted(tf):
-    header_fields = tf(source_table).fields
-    assert header_fields == exp_fields, \
-        F'Not all fields match. Found {len(header_fields)} field(s) when expected {len(exp_fields)}'
+    header_fields = tf(SOURCE_TABLE).fields
+    assert header_fields == EXP_FIELDS, \
+        F'Not all fields match. Found {len(header_fields)} field(s) when expected {len(EXP_FIELDS)}'
 
 
-@pytest.mark.parametrize('index, expected_column', exp_get_col)
+@pytest.mark.parametrize('index, expected_column', EXP_GET_COL)
 def test_get_column(tf, index, expected_column):
-    assert tf(source_table).get_column(index) == expected_column
+    assert tf(SOURCE_TABLE).get_column(index) == expected_column
 
 
-@pytest.mark.parametrize('index', exp_col_negative_index)
+@pytest.mark.parametrize('index', EXP_NONEXIST_COL_IX)
 def test_try_get_nonexistent_column(tf, index):
     with pytest.raises(IndexError):
-        tf(source_table).get_column(index)
+        tf(SOURCE_TABLE).get_column(index)
 
 
 def test_get_all_columns(tf):
-    assert tf(source_table).columns == exp_cols, 'Columns do not match.'
+    assert tf(SOURCE_TABLE).columns == EXP_COLS, 'Columns do not match.'
 
 
-@pytest.mark.parametrize('index, expected_row', exp_get_row)
+@pytest.mark.parametrize('index, expected_row', EXP_GET_ROW)
 def test_get_row(tf, index, expected_row):
-    assert tf(source_table).get_row(index) == expected_row
+    assert tf(SOURCE_TABLE).get_row(index) == expected_row
 
 
-@pytest.mark.parametrize('index', exp_row_negative_index)
+@pytest.mark.parametrize('index', EXP_NONEXIST_ROW_IX)
 def test_get_nonexistent_row(tf, index):
     with pytest.raises(IndexError):
-        tf(source_table).get_row(index)
+        tf(SOURCE_TABLE).get_row(index)
 
 
 def test_get_all_rows(tf):
-    assert tf(source_table).rows == exp_rows, 'Rows do not match.'
+    assert tf(SOURCE_TABLE).rows == EXP_ROWS, 'Rows do not match.'
