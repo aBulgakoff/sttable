@@ -6,6 +6,7 @@ class Table(object):
     def __init__(self):
         self._fields = None
         self._rows = []
+        self._columns = {}
 
     def __str__(self) -> str:
         return str(self.rows)
@@ -19,16 +20,38 @@ class Table(object):
 
     @fields.setter
     def fields(self, fields: Iterable[str]):
-        self._fields = {key: '' for key in fields}
+        composed_fields = {}
+        for key in fields:
+            composed_fields[key] = ''  # prepare rows structure
+            self._columns[key] = []  # prepare columns structure
+        self._fields = composed_fields
 
-    def row(self, index: int) -> Dict[str, str]:
+    def get_row(self, index: int) -> Dict[str, str]:
         try:
-            return self._rows[index]
+            return self._rows[:][index]
         except IndexError as e:
-            raise IndexError(f'Row with index {index} does not exist. The size of table is {len(self._rows)}.') from e
+            raise IndexError(f'Row with index {index} does not exist. Amount of rows is {len(self._rows)}.') from e
 
-    def add_row(self, row: Iterable[str]):
-        self._rows.append(dict(zip(self._fields.copy(), row)))
+    def add_row(self, row: Iterable[str]) -> None:
+        field_values_row = self._fields.copy()
+        index = 0
+        for field in field_values_row.keys():
+            field_values_row[field] = row[index]  # compose rows
+            self._columns[field].append(row[index])  # compose columns
+            index = index + 1
+        self._rows.append(field_values_row)
+
+    def get_column(self, index: int) -> List[str]:
+        try:
+            key_by_index = self.fields[index]
+        except IndexError as e:
+            raise IndexError(
+                f'Column with index {index} does not exist. Amount of columns is {len(self.fields)}.') from e
+        return self._columns[key_by_index][:]
+
+    @property
+    def columns(self) -> Dict[str, List[str]]:
+        return self._columns.copy()
 
     @property
     def rows(self) -> List[Dict[str, str]]:
