@@ -28,7 +28,7 @@ class Table(object):
 
     def get_row(self, index: int) -> Dict[str, str]:
         try:
-            return self._rows[:][index]
+            return self._rows[index].copy()
         except IndexError as e:
             raise IndexError(f'Row with index {index} does not exist. Amount of rows is {len(self._rows)}.') from e
 
