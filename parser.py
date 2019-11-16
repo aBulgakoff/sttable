@@ -1,8 +1,10 @@
+from typing import Iterable, List, Dict, Tuple
+
+
 class Table(object):
 
     def __init__(self):
         self._fields = None
-        self._columns = []
         self._rows = []
 
     def __str__(self) -> str:
@@ -12,32 +14,25 @@ class Table(object):
         return self.__str__()
 
     @property
-    def fields(self):
+    def fields(self) -> List['str']:
         return list(self._fields.keys())
 
     @fields.setter
-    def fields(self, fields):
+    def fields(self, fields: Iterable[str]):
         self._fields = {key: '' for key in fields}
 
-    @property
-    def row(self, index):
-        return self._rows[:][index]
+    def row(self, index: int) -> Dict[str, str]:
+        try:
+            return self._rows[index]
+        except IndexError as e:
+            raise IndexError(f'Row with index {index} does not exist. The size of table is {len(self._rows)}.') from e
 
-    @row.setter
-    def row(self, row, index):
-        self._rows[index] = row
-
-    def add_row(self, row):
+    def add_row(self, row: Iterable[str]):
         self._rows.append(dict(zip(self._fields.copy(), row)))
 
     @property
-    def rows(self):
+    def rows(self) -> List[Dict[str, str]]:
         return self._rows[:]
-
-    @rows.setter
-    def rows(self, rows):
-        for row in rows:
-            self.add_row(row)
 
 
 def parse_str_table(data: str) -> Table:
@@ -45,7 +40,7 @@ def parse_str_table(data: str) -> Table:
     Parser of string representation tables
 
     :param data: string representation table
-    with header in first line, columns divided by "|" and rows divided by EOL "\n"
+    with header in a first line, columns divided by "|" and rows divided by EOL "\n"
     :return Table object
 
     Example of data variable:
@@ -66,7 +61,7 @@ def parse_str_table(data: str) -> Table:
     return table
 
 
-def split_str_table(data: str) -> tuple:
+def split_str_table(data: str) -> Tuple[str, List[str]]:
     """
     :param data: string representation table with rows divided by EOL "\n"
     :return: tuple where 1st element is a Table Header's line and 2nd is an array with Table Body lines
@@ -79,7 +74,7 @@ def split_str_table(data: str) -> tuple:
     return splitted_data[0], splitted_data[1:]
 
 
-def extract_values_from_row(line: str) -> list:
+def extract_values_from_row(line: str) -> List[str]:
     """
     Example:
     >>> extract_values_from_row('| head1 | head2 |')
