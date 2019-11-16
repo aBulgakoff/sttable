@@ -1,6 +1,6 @@
 import pytest
 
-from parser import Table, parse_str_table
+from parser import parse_str_table
 
 
 @pytest.fixture()
