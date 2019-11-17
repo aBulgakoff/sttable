@@ -36,8 +36,14 @@ class Table(object):
         field_values_row = self._fields.copy()
         index = 0
         for field in field_values_row.keys():
-            field_values_row[field] = row[index]  # compose rows
-            self._columns[field].append(row[index])  # compose columns
+            try:
+                row_value = row[index]
+            except IndexError as e:
+                raise IndexError(f'Element with index {index} does not exist in the row. '
+                                 f'Amount of fields is {len(field_values_row.keys())} '
+                                 f'when amount of elements in the row is {len(row)}.') from e
+            field_values_row[field] = row_value  # compose rows
+            self._columns[field].append(row_value)  # compose columns
             index = index + 1
         self._rows.append(field_values_row)
 
@@ -93,7 +99,7 @@ def split_str_table(data: str) -> Tuple[str, List[str]]:
     >>> split_str_table(f'| head |\\n| body_1 |\\n| body_2 |')
     ('| head |', ['| body_1 |', '| body_2 |'])
     """
-    splitted_data = data.split("\n")
+    splitted_data = data.splitlines()
     return splitted_data[0], splitted_data[1:]
 
 
@@ -103,4 +109,4 @@ def extract_values_from_row(line: str) -> List[str]:
     >>> extract_values_from_row('| head1 | head2 |')
     ['head1', 'head2']
     """
-    return [value.strip() for value in line.split('|') if value.strip()]
+    return [value.strip() for value in line.split('|') if value]
