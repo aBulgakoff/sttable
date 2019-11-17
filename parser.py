@@ -1,4 +1,4 @@
-from typing import Iterable, List, Dict, Tuple
+from typing import cast, Iterable, List, Dict, Tuple
 
 
 class Table(object):
@@ -33,6 +33,7 @@ class Table(object):
             raise IndexError(f'Row with index {index} does not exist. Amount of rows is {len(self._rows)}.') from e
 
     def add_row(self, row: Iterable[str]) -> None:
+        row = cast(List[str], row)  # cast on Type hint level
         field_values_row = self._fields.copy()
         index = 0
         for field in field_values_row.keys():
@@ -44,7 +45,7 @@ class Table(object):
                                  f'when amount of elements in the row is {len(row)}.') from e
             field_values_row[field] = row_value  # compose rows
             self._columns[field].append(row_value)  # compose columns
-            index = index + 1
+            index += 1
         self._rows.append(field_values_row)
 
     def get_column(self, index: int) -> List[str]:
