@@ -1,7 +1,7 @@
 import pytest
 
 """
-Input:
+Example of Input:
 | header_1st_col   | header_2nd_col   | header_3rd_col   |
 | row_1_of_1st_col | row_1_of_2nd_col | row_1_of_3rd_col |
 | row_2_of_1st_col | row_2_of_2nd_col | row_2_of_3rd_col |
@@ -11,9 +11,11 @@ HEADER = '| header_1st_col | header_2nd_col | header_3rd_col |'
 BODY_ROW1 = '| row_1_of_1st_col | row_1_of_2nd_col | row_1_of_3rd_col |'
 BODY_ROW2 = '| row_2_of_1st_col | row_2_of_2nd_col | row_2_of_3rd_col |'
 BODY_ROW2_MISSING_MID = '| row_2_of_1st_col |   | row_2_of_3rd_col |'
+BODY_ROW2_WRONG_SIZE = '| row_2_of_1st_col | row_2_of_2nd_col |'
 
 SOURCE_TABLE = f'{HEADER}\n{BODY_ROW1}\n{BODY_ROW2}'
 SOURCE_TABLE_MISSING_REC = f'{HEADER}\n{BODY_ROW1}\n{BODY_ROW2_MISSING_MID}'
+SOURCE_TABLE_WRONG_REC = f'{HEADER}\n{BODY_ROW1}\n{BODY_ROW2_WRONG_SIZE}'
 
 EXP_FIELDS = ['header_1st_col', 'header_2nd_col', 'header_3rd_col']
 EXP_BODY = [BODY_ROW1, BODY_ROW2]
@@ -69,6 +71,11 @@ def test_get_row(tf, index, expected_row):
 
 def test_get_row_missing_rec(tf):
     assert tf(SOURCE_TABLE_MISSING_REC).get_row(1) == EXP_ROW1_MISSING_REC
+
+
+def test_get_row_wrong_rec(tf):
+    with pytest.raises(IndexError):
+        tf(SOURCE_TABLE_WRONG_REC).get_row(1)
 
 
 @pytest.mark.parametrize('index', EXP_NONEXISTENT_ROW_INDEX)
