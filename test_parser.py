@@ -16,6 +16,7 @@ BODY_ROW2_WRONG_SIZE = '| row_2_of_1st_col | row_2_of_2nd_col |'
 SOURCE_TABLE = f'{HEADER}\n{BODY_ROW1}\n{BODY_ROW2}'
 SOURCE_TABLE_MISSING_REC = f'{HEADER}\n{BODY_ROW1}\n{BODY_ROW2_MISSING_MID}'
 SOURCE_TABLE_WRONG_REC = f'{HEADER}\n{BODY_ROW1}\n{BODY_ROW2_WRONG_SIZE}'
+SOURCE_TABLE_NO_HEADER = f'{BODY_ROW1}\n{BODY_ROW2}'
 
 EXP_FIELDS = ['header_1st_col', 'header_2nd_col', 'header_3rd_col']
 EXP_BODY = [BODY_ROW1, BODY_ROW2]
@@ -41,6 +42,15 @@ EXP_ROW1_MISSING_REC = {'header_1st_col': 'row_2_of_1st_col',
 EXP_ROWS = [EXP_ROW0, EXP_ROW1]
 EXP_GET_ROW = [(0, EXP_ROW0), (1, EXP_ROW1), (-1, EXP_ROW1), (-2, EXP_ROW0)]
 EXP_NONEXISTENT_ROW_INDEX = (2, 3, -3)
+
+EXP_ROW_NO_HEADER0 = {0: 'row_1_of_1st_col',
+                      1: 'row_1_of_2nd_col',
+                      2: 'row_1_of_3rd_col'}
+EXP_ROW_NO_HEADER1 = {0: 'row_2_of_1st_col',
+                      1: 'row_2_of_2nd_col',
+                      2: 'row_2_of_3rd_col'}
+EXP_ROW_NO_HEADER = [(0, EXP_ROW_NO_HEADER0), (1, EXP_ROW_NO_HEADER1),
+                     (-1, EXP_ROW_NO_HEADER1), (-2, EXP_ROW_NO_HEADER0)]
 
 
 def test_fields_extracted(tf):
@@ -86,3 +96,8 @@ def test_get_nonexistent_row(tf, index):
 
 def test_get_all_rows(tf):
     assert tf(SOURCE_TABLE).rows == EXP_ROWS, 'Rows do not match.'
+
+
+@pytest.mark.parametrize('index, expected_row', EXP_ROW_NO_HEADER)
+def test_get_row_no_header(tf, index, expected_row):
+    assert tf(SOURCE_TABLE_NO_HEADER, table_with_header=False).get_row(index) == expected_row
