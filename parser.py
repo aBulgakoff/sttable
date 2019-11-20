@@ -34,6 +34,10 @@ class Table(object):
 
     def add_row(self, row: Iterable[str]) -> None:
         row = cast(List[str], row)  # cast on Type hint level
+        # if table does not have a header make it using indexes of elements in row 0
+        if not self._fields:
+            self.fields = [value for value in range(len(row))]
+
         field_values_row = self._fields.copy()
         index = 0
         for field in field_values_row.keys():
@@ -65,12 +69,13 @@ class Table(object):
         return self._rows[:]
 
 
-def parse_str_table(data: str) -> Table:
+def parse_str_table(data: str, table_with_header: bool = True) -> Table:
     """
     Parser of string representation tables
 
     :param data: string representation table
     with header in a first line, columns divided by "|" and rows divided by EOL "\n"
+    :param table_with_header: parameter which marks header/no header table
     :return Table object
 
     Example of data variable:
@@ -84,8 +89,11 @@ def parse_str_table(data: str) -> Table:
 
     """
     table = Table()
-    unformatted_header, unformatted_body = split_str_table(data)
-    table.fields = extract_values_from_row(unformatted_header)
+    if table_with_header:
+        unformatted_header, unformatted_body = split_str_table(data)
+        table.fields = extract_values_from_row(unformatted_header)
+    else:
+        no_header, unformatted_body = split_str_table(f'no_header\n{data}')
     for line in unformatted_body:
         table.add_row(extract_values_from_row(line))
     return table
