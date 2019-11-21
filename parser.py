@@ -1,4 +1,4 @@
-from typing import cast, Iterable, List, Dict, Tuple
+from typing import cast, Iterable, List, Dict, Tuple, Optional
 
 
 class Table(object):
@@ -36,7 +36,7 @@ class Table(object):
         row = cast(List[str], row)  # cast on Type hint level
         # if table does not have a header make it using indexes of elements in row 0
         if not self._fields:
-            self.fields = [value for value in range(len(row))]
+            self.fields = [str(value) for value in range(len(row))]
 
         field_values_row = self._fields.copy()
         index = 0
@@ -93,23 +93,26 @@ def parse_str_table(data: str, table_with_header: bool = True) -> Table:
         unformatted_header, unformatted_body = split_str_table(data)
         table.fields = extract_values_from_row(unformatted_header)
     else:
-        no_header, unformatted_body = split_str_table(f'no_header\n{data}')
+        unformatted_body = split_str_table(data, header=False)[1]
     for line in unformatted_body:
         table.add_row(extract_values_from_row(line))
     return table
 
 
-def split_str_table(data: str) -> Tuple[str, List[str]]:
+def split_str_table(data: str, header: bool = True) -> Tuple[Optional[str], List[str]]:
     """
     :param data: string representation table with rows divided by EOL "\n"
-    :return: tuple where 1st element is a Table Header's line and 2nd is an array with Table Body lines
+    :param header: parameter which marks header/no header table
+    :return: tuple where 1st element is an optional Table Header's line and 2nd is an array with Table Body lines
 
     Example:
     >>> split_str_table(f'| head |\\n| body_1 |\\n| body_2 |')
     ('| head |', ['| body_1 |', '| body_2 |'])
+    >>> split_str_table(f'| body_1 |\\n| body_2 |', header=False)
+    (None, ['| body_1 |', '| body_2 |'])
     """
     splitted_data = data.splitlines()
-    return splitted_data[0], splitted_data[1:]
+    return (splitted_data[0], splitted_data[1:]) if header else (None, splitted_data)
 
 
 def extract_values_from_row(line: str) -> List[str]:
