@@ -43,12 +43,12 @@ EXP_ROWS = [EXP_ROW0, EXP_ROW1]
 EXP_GET_ROW = [(0, EXP_ROW0), (1, EXP_ROW1), (-1, EXP_ROW1), (-2, EXP_ROW0)]
 EXP_NONEXISTENT_ROW_INDEX = (2, 3, -3)
 
-EXP_ROW_NO_HEADER0 = {0: 'row_1_of_1st_col',
-                      1: 'row_1_of_2nd_col',
-                      2: 'row_1_of_3rd_col'}
-EXP_ROW_NO_HEADER1 = {0: 'row_2_of_1st_col',
-                      1: 'row_2_of_2nd_col',
-                      2: 'row_2_of_3rd_col'}
+EXP_ROW_NO_HEADER0 = {'0': 'row_1_of_1st_col',
+                      '1': 'row_1_of_2nd_col',
+                      '2': 'row_1_of_3rd_col'}
+EXP_ROW_NO_HEADER1 = {'0': 'row_2_of_1st_col',
+                      '1': 'row_2_of_2nd_col',
+                      '2': 'row_2_of_3rd_col'}
 EXP_ROW_NO_HEADER = [(0, EXP_ROW_NO_HEADER0), (1, EXP_ROW_NO_HEADER1),
                      (-1, EXP_ROW_NO_HEADER1), (-2, EXP_ROW_NO_HEADER0)]
 
