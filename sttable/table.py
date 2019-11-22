@@ -1,4 +1,4 @@
-from typing import List, Iterable, Dict, cast
+from typing import cast, Iterable, List, Dict
 
 
 class Table(object):
@@ -34,6 +34,10 @@ class Table(object):
 
     def add_row(self, row: Iterable[str]) -> None:
         row = cast(List[str], row)  # cast on Type hint level
+        # if table does not have a header make it using indexes of elements in row 0
+        if not self._fields:
+            self.fields = [str(value) for value in range(len(row))]
+
         field_values_row = self._fields.copy()
         index = 0
         for field in field_values_row.keys():
