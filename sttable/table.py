@@ -26,11 +26,13 @@ class Table(object):
             self._columns[key] = []  # prepare columns structure
         self._fields = composed_fields
 
-    def get_row(self, index: int) -> Dict[str, str]:
-        try:
-            return self._rows[index].copy()
-        except IndexError as e:
-            raise IndexError(f'Row with index {index} does not exist. Amount of rows is {len(self._rows)}.') from e
+    @property
+    def columns(self) -> Dict[str, List[str]]:
+        return self._columns.copy()
+
+    @property
+    def rows(self) -> List[Dict[str, str]]:
+        return self._rows[:]
 
     def add_row(self, row: Iterable[str]) -> None:
         row = cast(List[str], row)  # cast on Type hint level
@@ -52,6 +54,12 @@ class Table(object):
             index += 1
         self._rows.append(field_values_row)
 
+    def get_row(self, index: int) -> Dict[str, str]:
+        try:
+            return self._rows[index].copy()
+        except IndexError as e:
+            raise IndexError(f'Row with index {index} does not exist. Amount of rows is {len(self._rows)}.') from e
+
     def get_column(self, index: int) -> List[str]:
         try:
             key_by_index = self.fields[index]
@@ -59,11 +67,3 @@ class Table(object):
             raise IndexError(
                 f'Column with index {index} does not exist. Amount of columns is {len(self.fields)}.') from e
         return self._columns[key_by_index][:]
-
-    @property
-    def columns(self) -> Dict[str, List[str]]:
-        return self._columns.copy()
-
-    @property
-    def rows(self) -> List[Dict[str, str]]:
-        return self._rows[:]
