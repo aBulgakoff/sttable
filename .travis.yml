@@ -7,7 +7,7 @@ before_install:
   - pip install -U pipenv
 install:
   - pipenv install --dev
-  - pipenv shell
-script: python -m pytest
+  - pipenv sync
+script: python -m pipenv run pytest
 after_success:
   - codecov
