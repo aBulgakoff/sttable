@@ -7,7 +7,7 @@ before_install:
   - pip install -U pipenv
 install:
   - PIPENV_IGNORE_VIRTUALENVS=1 pipenv install --dev --skip-lock
-  - PIPENV_IGNORE_VIRTUALENVS=1 pipenv shellg
+  - PIPENV_IGNORE_VIRTUALENVS=1 pipenv shell
 script: python -m pipenv run pytest
 after_success:
   - codecov
