@@ -8,6 +8,6 @@ before_install:
 install:
   - pipenv install --dev
   - pipenv shell
-script: pytest
+script: python -m pytest
 after_success:
   - codecov
