@@ -14,7 +14,7 @@ setuptools.setup(
     version='v0.0.1',
     long_description=README,
     long_description_content_type='text/x-rst',
-    url='Parser of string representation tables',
+    url='https://github.com/aBulgakoff/sttable',
     packages=setuptools.find_packages(),
     python_requires=">=3.7",
     install_requires=[],
